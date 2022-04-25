@@ -1,0 +1,28 @@
+version: '3.3'
+
+services:
+    tomcat:
+        container_name: cardatabase-tomcat
+        image: tomcat:alpine
+        volumes:
+          - ./target:/tmp/target
+        ports:
+            - "8080:8080"
+        command: "sh -c 'rm -rf /usr/local/tomcat/webapps/* && cp /tmp/target/carDatabase-*.war /usr/local/tomcat/webapps/ROOT.war && catalina.sh run'"
+
+    mariadb:
+        container_name: cardatabase-mariadb
+        image: mariadb:latest
+        volumes:
+            - mariadb-data:/var/lib/mysql
+            - ./docker/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d/
+        ports:
+            - "3306:3306"
+        environment:
+             - MYSQL_ROOT_PASSWORD=root
+             - MYSQL_DATABASE=cardb
+             - MYSQL_USER=webAppUser
+             - MYSQL_PASSWORD=password
+
+volumes:
+    mariadb-data:
